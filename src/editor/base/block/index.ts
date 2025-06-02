@@ -1,7 +1,7 @@
-import { ComponentClass, FunctionComponent } from "react";
 import { generateUuid } from "../../../utils/generate-uuid";
-import { ComponentProps, IDocumentBlock } from "./types";
+import { Component, ComponentProps, IDocumentBlock, Wrapper } from "./types";
 import { IDocumentRoot } from "../document";
+import { BlockWrapper } from "./wrapper";
 
 export abstract class DocumentBlock<TProps = ComponentProps>
   implements IDocumentBlock<TProps>
@@ -46,10 +46,11 @@ export abstract class DocumentBlock<TProps = ComponentProps>
     return this.type;
   }
 
-  abstract getElement():
-    | FunctionComponent<TProps>
-    | ComponentClass<TProps>
-    | string;
+  getWrapper(): Wrapper<TProps> {
+    return BlockWrapper;
+  }
+
+  abstract getElement(): Component<TProps>;
 
   abstract getProps(): TProps;
 

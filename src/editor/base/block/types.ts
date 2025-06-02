@@ -1,7 +1,14 @@
-import { ComponentClass, FunctionComponent } from "react";
+import { ComponentClass, FunctionComponent, PropsWithChildren } from "react";
 import { IDocumentRoot } from "../document";
 
 export type ComponentProps = any;
+
+export type Component<TProps = ComponentProps> =
+  | FunctionComponent<TProps>
+  | ComponentClass<TProps>
+  | string;
+
+export type Wrapper<TProps = ComponentProps> = Component<TProps & PropsWithChildren>;
 
 export interface Iterable<T> {
   [Symbol.iterator](): Generator<T>;
@@ -16,7 +23,8 @@ export interface IDocumentBlock<TProps = ComponentProps>
   getRoot(): IDocumentRoot;
   setParent(parent: IDocumentBlock): void;
   getParent(): IDocumentBlock | null;
-  getElement(): FunctionComponent<TProps> | ComponentClass<TProps> | string;
+  getWrapper(): Wrapper<TProps>;
+  getElement(): Component<TProps>;
   getProps(): TProps;
   isComposite(): boolean;
   getChildren(): string[];
