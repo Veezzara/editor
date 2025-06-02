@@ -1,13 +1,13 @@
-import { useState } from "react";
 import styles from "./style.module.scss";
+import { InternalComponentProps } from "../../../base/block";
+import { CounterBlockState } from "../model";
 
-export const CounterBlockComponent = () => {
-  const [counter, setCounter] = useState(0);
-
-  return (
-    <span contentEditable={false} className={styles.counter}>
-      <span>{counter}</span>
-      <button onClick={() => setCounter(counter + 1)}>+</button>
-    </span>
-  );
-};
+export const CounterBlockComponent = ({
+  state,
+  setState,
+}: InternalComponentProps<CounterBlockState>) => (
+  <span contentEditable={false} className={styles.counter}>
+    <span>{state.count}</span>
+    <button onClick={() => setState({ count: state.count + 1 })}>+</button>
+  </span>
+);

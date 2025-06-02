@@ -1,8 +1,11 @@
-import { FunctionComponent, ComponentClass } from "react";
-import { DocumentBlock, IDocumentBlock } from "../block";
+import { DocumentBlock, IDocumentBlock, InternalComponent } from "../block";
 import { IDocumentRoot } from "./types";
+import { RichTextDocumentComponent } from "./ui";
 
-export class RichTextDocument extends DocumentBlock implements IDocumentRoot {
+export class RichTextDocument
+  extends DocumentBlock<object>
+  implements IDocumentRoot
+{
   type = "document";
   private blocks: Map<string, IDocumentBlock> = new Map();
 
@@ -15,16 +18,15 @@ export class RichTextDocument extends DocumentBlock implements IDocumentRoot {
     throw new Error("Cannot attach Document to another root.");
   }
 
-  override getElement():
-    | string
-    | FunctionComponent<any>
-    | ComponentClass<any, any> {
-    return "div";
+  protected getInternalComponent(): InternalComponent<object> {
+    return RichTextDocumentComponent;
   }
 
-  override getProps() {
+  protected getSnapshot(): object {
     return {};
   }
+  
+  protected setState(_state: object): void {}
 
   override isComposite(): boolean {
     return true;

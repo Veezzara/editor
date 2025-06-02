@@ -1,14 +1,25 @@
-import { DocumentBlock } from "../../../base/block";
+import { DocumentBlock, InternalComponent } from "../../../base/block";
 import { CounterBlockComponent } from "../ui";
 
-export class CounterBlock extends DocumentBlock {
-  type = "counter";
+export type CounterBlockState = {
+  count: number;
+};
 
-  override getElement() {
+export class CounterBlock extends DocumentBlock<CounterBlockState> {
+  type = "counter";
+  private count = 0;
+
+  protected getInternalComponent(): InternalComponent<CounterBlockState> {
     return CounterBlockComponent;
   }
 
-  override getProps() {
-    return {};
+  protected getSnapshot(): CounterBlockState {
+    return {
+      count: this.count,
+    };
+  }
+
+  protected setState(state: CounterBlockState): void {
+    this.count = state.count;
   }
 }

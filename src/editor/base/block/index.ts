@@ -1,19 +1,29 @@
 import { generateUuid } from "../../../utils/generate-uuid";
-import { Component, ComponentProps, IDocumentBlock, Wrapper } from "./types";
+import {
+  Action,
+  Component,
+  IDocumentBlock,
+  InternalComponent,
+  Wrapper,
+} from "./types";
 import { IDocumentRoot } from "../document";
 import { BlockWrapper } from "./wrapper";
+import { WithSubscriber } from "../../../utils/with-subscriber";
 
-export abstract class DocumentBlock<TProps = ComponentProps>
-  implements IDocumentBlock<TProps>
-{
+export abstract class DocumentBlock<TState> implements IDocumentBlock {
   abstract type: string;
   protected id = generateUuid();
   protected root: IDocumentRoot | null = null;
-  protected parent: DocumentBlock | null = null;
+  protected parent: IDocumentBlock | null = null;
   private children: string[] = [];
+  private observers: Action[] = [];
 
   getId(): string {
     return this.id;
+  }
+
+  getType(): string {
+    return this.type;
   }
 
   afterSetRoot() {}
@@ -37,7 +47,7 @@ export abstract class DocumentBlock<TProps = ComponentProps>
 
   afterSetParent() {}
 
-  setParent(parent: DocumentBlock): void {
+  setParent(parent: IDocumentBlock): void {
     if (this.parent) {
       this.parent.removeChild(this);
     }
@@ -46,21 +56,47 @@ export abstract class DocumentBlock<TProps = ComponentProps>
     this.afterSetParent();
   }
 
-  getParent(): DocumentBlock | null {
+  getParent(): IDocumentBlock | null {
     return this.parent;
   }
 
-  getType(): string {
-    return this.type;
-  }
-
-  getWrapper(): Wrapper<TProps> {
+  getWrapper(): Wrapper {
     return BlockWrapper;
   }
 
-  abstract getElement(): Component<TProps>;
+  protected abstract getInternalComponent(): InternalComponent<TState>;
 
-  abstract getProps(): TProps;
+  getComponent(): Component {
+    return this.Component;
+  }
+
+  protected abstract getSnapshot(): TState;
+
+  protected abstract setState(state: TState): void;
+
+  private setStateInternal(state: TState) {
+    this.setState(state);
+    this.notify();
+  }
+
+  private subscribe(action: Action) {
+    this.observers.push(action);
+
+    return () => {
+      this.observers = this.observers.filter((observer) => observer !== action);
+    };
+  }
+
+  private Component = WithSubscriber<TState>({
+    Component: this.getInternalComponent(),
+    subscribe: (action) => this.subscribe(action),
+    getSnapshot: () => this.getSnapshot(),
+    setState: (state) => this.setStateInternal(state),
+  });
+
+  private notify() {
+    this.observers.forEach((observer) => observer());
+  }
 
   isComposite(): boolean {
     return false;
@@ -92,7 +128,7 @@ export abstract class DocumentBlock<TProps = ComponentProps>
     this.getRoot().removeBlockFromDocument(child);
   }
 
-  *getIterator(): Generator<IDocumentBlock<TProps>> {
+  *getIterator(): Generator<IDocumentBlock> {
     if (!this.isComposite()) {
       return;
     }
@@ -110,7 +146,7 @@ export abstract class DocumentBlock<TProps = ComponentProps>
     }
   }
 
-  [Symbol.iterator](): Generator<IDocumentBlock<TProps>> {
+  [Symbol.iterator](): Generator<IDocumentBlock> {
     return this.getIterator();
   }
 }

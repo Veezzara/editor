@@ -1,10 +1,9 @@
-import { PropsWithChildren } from "react";
-import { DocumentBlock } from "../../../base/block";
-import { ParagraphBlockComponent } from "../ui";
+import { DocumentBlock, InternalComponent } from "../../../base/block";
 import { TextBlock } from "../../text/model";
 import { CounterBlock } from "../../counter/model";
+import { ParagraphBlockComponent } from "../ui";
 
-export type ParagraphBlockComponentProps = PropsWithChildren;
+export type ParagraphBlockComponentProps = object;
 
 export class ParagraphBlock extends DocumentBlock<ParagraphBlockComponentProps> {
   type = "paragraph";
@@ -18,13 +17,15 @@ export class ParagraphBlock extends DocumentBlock<ParagraphBlockComponentProps> 
     this.addChild(textBlock2);
   }
 
-  override getProps() {
-    return {};
-  }
-
-  override getElement() {
+  protected getInternalComponent(): InternalComponent<ParagraphBlockComponentProps> {
     return ParagraphBlockComponent;
   }
+
+  protected getSnapshot(): ParagraphBlockComponentProps {
+    return {};
+  }
+  
+  protected setState(_state: ParagraphBlockComponentProps): void {}
 
   override isComposite(): boolean {
     return true;

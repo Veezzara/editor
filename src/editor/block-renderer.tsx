@@ -5,16 +5,16 @@ export type EditorContentsProps = {
 };
 
 export const BlockRenderer = ({ block }: EditorContentsProps) => {
-  const Element = block.getElement();
   const Wrapper = block.getWrapper();
+  const Component = block.getComponent();
 
   return (
     <Wrapper>
-      <Element {...block.getProps()}>
+      <Component>
         {Array.from(block).map((child) => (
           <BlockRenderer block={child} key={child.getId()} />
         ))}
-      </Element>
+      </Component>
     </Wrapper>
   );
 };

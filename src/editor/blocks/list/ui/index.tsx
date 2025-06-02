@@ -1,10 +1,10 @@
+import { InternalComponentProps } from "../../../base/block";
 import { ListBlockComponentProps } from "../model";
 
 export const ListBlockComponent = ({
-  type,
+  state,
   children,
-}: ListBlockComponentProps) => {
-  const ListElement = type;
-
+}: InternalComponentProps<ListBlockComponentProps>) => {
+  const ListElement = state.type;
   return <ListElement>{children}</ListElement>;
 };

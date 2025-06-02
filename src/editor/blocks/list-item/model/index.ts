@@ -1,9 +1,8 @@
-import { PropsWithChildren } from "react";
-import { DocumentBlock } from "../../../base/block";
+import { DocumentBlock, InternalComponent } from "../../../base/block";
 import { ListItemBlockComponent } from "../ui";
 import { ParagraphBlock } from "../../paragraph/model";
 
-export type ListItemBlockComponentProps = PropsWithChildren;
+export type ListItemBlockComponentProps = object;
 
 export class ListItemBlock extends DocumentBlock<ListItemBlockComponentProps> {
   type = "li";
@@ -17,11 +16,13 @@ export class ListItemBlock extends DocumentBlock<ListItemBlockComponentProps> {
     this.addChild(paragraphBlock);
   }
 
-  override getElement() {
+  protected getInternalComponent(): InternalComponent<ListItemBlockComponentProps> {
     return ListItemBlockComponent;
   }
 
-  override getProps() {
+  protected getSnapshot(): ListItemBlockComponentProps {
     return {};
   }
+
+  protected setState(_state: ListItemBlockComponentProps): void {}
 }
