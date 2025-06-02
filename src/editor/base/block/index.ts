@@ -19,6 +19,10 @@ export abstract class DocumentBlock<TProps = ComponentProps>
   afterSetRoot() {}
 
   setRoot(root: IDocumentRoot) {
+    if (this.root) {
+      this.root.removeBlockFromDocument(this);
+    }
+
     this.root = root;
     this.afterSetRoot();
   }
@@ -34,6 +38,10 @@ export abstract class DocumentBlock<TProps = ComponentProps>
   afterSetParent() {}
 
   setParent(parent: DocumentBlock): void {
+    if (this.parent) {
+      this.parent.removeChild(this);
+    }
+
     this.parent = parent;
     this.afterSetParent();
   }
