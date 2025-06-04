@@ -1,4 +1,5 @@
-import { DocumentBlock, InternalComponent } from "../../../base/block";
+import { DocumentBlock } from "../../../base/block";
+import { InternalComponent } from "../../../common/types/component";
 import { CounterBlockComponent } from "../ui";
 
 export type CounterBlockState = {
@@ -7,19 +8,14 @@ export type CounterBlockState = {
 
 export class CounterBlock extends DocumentBlock<CounterBlockState> {
   type = "counter";
-  private count = 0;
 
-  protected getInternalComponent(): InternalComponent<CounterBlockState> {
-    return CounterBlockComponent;
-  }
-
-  protected getSnapshot(): CounterBlockState {
+  protected getInitialState(): CounterBlockState {
     return {
-      count: this.count,
+      count: 0,
     };
   }
 
-  protected setState(state: CounterBlockState): void {
-    this.count = state.count;
+  protected getInternalComponent(): InternalComponent<CounterBlockState> {
+    return CounterBlockComponent;
   }
 }

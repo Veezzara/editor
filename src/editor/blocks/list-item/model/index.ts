@@ -1,8 +1,9 @@
-import { DocumentBlock, InternalComponent } from "../../../base/block";
 import { ListItemBlockComponent } from "../ui";
 import { ParagraphBlock } from "../../paragraph/model";
+import { DocumentBlock } from "../../../base/block";
+import { InternalComponent } from "../../../common/types/component";
 
-export type ListItemBlockComponentProps = object;
+export type ListItemBlockComponentProps = undefined;
 
 export class ListItemBlock extends DocumentBlock<ListItemBlockComponentProps> {
   type = "li";
@@ -16,13 +17,11 @@ export class ListItemBlock extends DocumentBlock<ListItemBlockComponentProps> {
     this.addChild(paragraphBlock);
   }
 
+  protected getInitialState(): ListItemBlockComponentProps {
+    return undefined;
+  }
+
   protected getInternalComponent(): InternalComponent<ListItemBlockComponentProps> {
     return ListItemBlockComponent;
   }
-
-  protected getSnapshot(): ListItemBlockComponentProps {
-    return {};
-  }
-
-  protected setState(_state: ListItemBlockComponentProps): void {}
 }

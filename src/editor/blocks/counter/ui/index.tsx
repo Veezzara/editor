@@ -1,6 +1,6 @@
 import styles from "./style.module.scss";
-import { InternalComponentProps } from "../../../base/block";
 import { CounterBlockState } from "../model";
+import { InternalComponentProps } from "../../../common/types/component";
 
 export const CounterBlockComponent = ({
   state,

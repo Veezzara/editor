@@ -1,7 +1,8 @@
 import { PropsWithChildren } from "react";
-import { DocumentBlock, InternalComponent } from "../../../base/block";
 import { ListBlockComponent } from "../ui";
 import { ListItemBlock } from "../../list-item/model";
+import { DocumentBlock } from "../../../base/block";
+import { InternalComponent } from "../../../common/types/component";
 
 export type ListBlockComponentProps = {
   type: "ol" | "ul";
@@ -9,25 +10,20 @@ export type ListBlockComponentProps = {
 
 export class ListBlock extends DocumentBlock<ListBlockComponentProps> {
   type = "list";
-  listType: "ol" | "ul";
 
   constructor(type: "ol" | "ul") {
     super();
-    this.listType = type;
+    this.setState({ type });
+  }
+
+  protected getInitialState(): ListBlockComponentProps {
+    return {
+      type: "ul",
+    };
   }
 
   protected getInternalComponent(): InternalComponent<ListBlockComponentProps> {
     return ListBlockComponent;
-  }
-
-  protected getSnapshot(): ListBlockComponentProps {
-    return {
-      type: this.listType,
-    };
-  }
-
-  protected setState(state: ListBlockComponentProps): void {
-    this.listType = state.type;
   }
 
   override afterSetParent() {

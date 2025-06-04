@@ -1,9 +1,3 @@
-import { Wrapper } from "./types";
+import { Wrapper } from "../../common/types/component";
 
-export const BlockWrapper: Wrapper = ({ children }) => {
-  return (
-    <span contentEditable suppressContentEditableWarning>
-      {children}
-    </span>
-  );
-};
+export const BlockWrapper: Wrapper = ({ children }) => <>{children}</>;

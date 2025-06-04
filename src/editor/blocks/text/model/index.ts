@@ -1,4 +1,5 @@
-import { DocumentBlock, InternalComponent } from "../../../base/block";
+import { DocumentBlock } from "../../../base/block";
+import { InternalComponent } from "../../../common/types/component";
 import { TextBlockComponent } from "../ui";
 
 export type TextBlockComponentProps = {
@@ -7,24 +8,19 @@ export type TextBlockComponentProps = {
 
 export class TextBlock extends DocumentBlock<TextBlockComponentProps> {
   type = "text";
-  text: string;
 
   constructor(text: string) {
     super();
-    this.text = text;
+    this.setState({ text });
+  }
+
+  protected getInitialState(): TextBlockComponentProps {
+    return {
+      text: "",
+    };
   }
 
   protected getInternalComponent(): InternalComponent<TextBlockComponentProps> {
     return TextBlockComponent;
-  }
-
-  protected getSnapshot(): TextBlockComponentProps {
-    return {
-      text: this.text,
-    };
-  }
-
-  protected setState(state: TextBlockComponentProps): void {
-    this.text = state.text;
   }
 }

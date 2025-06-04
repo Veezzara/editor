@@ -1,22 +1,5 @@
-import { ComponentClass, FunctionComponent, PropsWithChildren } from "react";
+import { Component, Wrapper } from "../../common/types/component";
 import { IDocumentRoot } from "../document";
-
-export type Action = () => void;
-
-export type InternalComponentProps<TState> = {
-  state: TState;
-  setState: (state: TState) => void;
-} & PropsWithChildren;
-
-export type ReactComponent<TComponentProps> =
-  | FunctionComponent<TComponentProps>
-  | ComponentClass<TComponentProps>;
-
-export type InternalComponent<TState> = ReactComponent<InternalComponentProps<TState>>;
-
-export type Component = ReactComponent<PropsWithChildren>;
-
-export type Wrapper = ReactComponent<PropsWithChildren>;
 
 export interface Iterable<T> {
   [Symbol.iterator](): Generator<T>;

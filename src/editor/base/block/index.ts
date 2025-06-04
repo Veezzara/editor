@@ -1,22 +1,31 @@
-import { generateUuid } from "../../../utils/generate-uuid";
-import {
-  Action,
-  Component,
-  IDocumentBlock,
-  InternalComponent,
-  Wrapper,
-} from "./types";
+import { IDocumentBlock } from "./types";
 import { IDocumentRoot } from "../document";
 import { BlockWrapper } from "./wrapper";
-import { WithSubscriber } from "../../../utils/with-subscriber";
+import { Action } from "../../common/types/action";
+import { generateUuid } from "../../common/utils/generate-uuid";
+import { WithSubscriber } from "../../common/utils/with-subscriber";
+import {
+  Wrapper,
+  InternalComponent,
+  Component,
+  InternalState,
+} from "../../common/types/component";
 
 export abstract class DocumentBlock<TState> implements IDocumentBlock {
   abstract type: string;
   protected id = generateUuid();
   protected root: IDocumentRoot | null = null;
   protected parent: IDocumentBlock | null = null;
-  private children: string[] = [];
+  protected internalState: InternalState<TState>;
   private observers: Action[] = [];
+
+  constructor() {
+    const initialState = this.getInitialState();
+    this.internalState = {
+      state: initialState,
+      children: [],
+    };
+  }
 
   getId(): string {
     return this.id;
@@ -70,12 +79,17 @@ export abstract class DocumentBlock<TState> implements IDocumentBlock {
     return this.Component;
   }
 
-  protected abstract getSnapshot(): TState;
+  protected abstract getInitialState(): TState;
 
-  protected abstract setState(state: TState): void;
+  private getInternalState(): InternalState<TState> {
+    return this.internalState;
+  }
 
-  private setStateInternal(state: TState) {
-    this.setState(state);
+  protected setState(state: TState): void {
+    this.internalState = {
+      ...this.internalState,
+      state,
+    };
     this.notify();
   }
 
@@ -90,12 +104,15 @@ export abstract class DocumentBlock<TState> implements IDocumentBlock {
   private Component = WithSubscriber<TState>({
     Component: this.getInternalComponent(),
     subscribe: (action) => this.subscribe(action),
-    getSnapshot: () => this.getSnapshot(),
-    setState: (state) => this.setStateInternal(state),
+    getSnapshot: () => this.getInternalState(),
+    setState: (state) => this.setState(state),
+    block: this,
   });
 
   private notify() {
-    this.observers.forEach((observer) => observer());
+    for (const observer of this.observers) {
+      observer();
+    }
   }
 
   isComposite(): boolean {
@@ -109,23 +126,39 @@ export abstract class DocumentBlock<TState> implements IDocumentBlock {
   }
 
   getChildren(): string[] {
-    return this.children;
+    return this.internalState.children;
   }
 
   addChild(child: IDocumentBlock): void {
     this.throwIfNotComposite();
 
-    this.children.push(child.getId());
+    const children = [...this.internalState.children, child.getId()];
+    this.internalState = {
+      ...this.internalState,
+      children,
+    };
+
     this.getRoot().addBlockToDocument(child);
     child.setRoot(this.getRoot());
     child.setParent(this);
+
+    this.notify();
   }
 
   removeChild(child: IDocumentBlock): void {
     this.throwIfNotComposite();
 
-    this.children = this.children.filter((id) => id !== child.getId());
+    const children = this.internalState.children.filter(
+      (id) => id !== child.getId()
+    );
+    this.internalState = {
+      ...this.internalState,
+      children,
+    };
+
     this.getRoot().removeBlockFromDocument(child);
+
+    this.notify();
   }
 
   *getIterator(): Generator<IDocumentBlock> {

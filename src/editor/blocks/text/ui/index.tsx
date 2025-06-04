@@ -1,4 +1,4 @@
-import { InternalComponentProps } from "../../../base/block";
+import { InternalComponentProps } from "../../../common/types/component";
 import { TextBlockComponentProps } from "../model";
 
 export const TextBlockComponent = ({

@@ -1,9 +1,12 @@
-import { DocumentBlock, IDocumentBlock, InternalComponent } from "../block";
+import { InternalComponent } from "../../common/types/component";
+import { DocumentBlock, IDocumentBlock } from "../block";
 import { IDocumentRoot } from "./types";
 import { RichTextDocumentComponent } from "./ui";
 
+export type RichTextDocumentState = undefined;
+
 export class RichTextDocument
-  extends DocumentBlock<object>
+  extends DocumentBlock<RichTextDocumentState>
   implements IDocumentRoot
 {
   type = "document";
@@ -14,19 +17,17 @@ export class RichTextDocument
     this.root = this;
   }
 
+  protected getInitialState() {
+    return undefined;
+  }
+
   override setRoot(_root: IDocumentRoot): void {
     throw new Error("Cannot attach Document to another root.");
   }
 
-  protected getInternalComponent(): InternalComponent<object> {
+  protected getInternalComponent(): InternalComponent<RichTextDocumentState> {
     return RichTextDocumentComponent;
   }
-
-  protected getSnapshot(): object {
-    return {};
-  }
-  
-  protected setState(_state: object): void {}
 
   override isComposite(): boolean {
     return true;

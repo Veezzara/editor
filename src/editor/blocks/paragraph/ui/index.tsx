@@ -1,4 +1,4 @@
-import { InternalComponentProps } from "../../../base/block";
+import { InternalComponentProps } from "../../../common/types/component";
 import { ParagraphBlockComponentProps } from "../model";
 
 export const ParagraphBlockComponent = ({

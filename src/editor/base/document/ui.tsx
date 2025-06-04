@@ -1,5 +1,10 @@
-import { InternalComponentProps } from "../block";
+import { RichTextDocumentState } from ".";
+import { InternalComponentProps } from "../../common/types/component";
 
 export const RichTextDocumentComponent = ({
   children,
-}: InternalComponentProps<object>) => <div>{children}</div>;
+}: InternalComponentProps<RichTextDocumentState>) => (
+  <div contentEditable suppressContentEditableWarning>
+    {children}
+  </div>
+);
