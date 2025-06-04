@@ -20,7 +20,6 @@ export const Editor = () => {
   const addParagraph = () => {
     const paragraphBlock = new ParagraphBlock();
     root.addChild(paragraphBlock);
-    console.log(root);
   };
 
   const Document = root.getComponent();
