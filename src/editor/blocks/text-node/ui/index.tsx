@@ -1,9 +1,9 @@
 import { InternalComponentProps } from "../../../common/types/component";
-import { TextBlockComponentProps } from "../model";
+import { TextNodeBlockComponentProps } from "../model";
 
-export const TextBlockComponent = ({
+export const TextNodeBlockComponent = ({
   state,
-}: InternalComponentProps<TextBlockComponentProps>) => (
+}: InternalComponentProps<TextNodeBlockComponentProps>) => (
   <span
     contentEditable={true}
     suppressContentEditableWarning
