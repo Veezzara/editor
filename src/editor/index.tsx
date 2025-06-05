@@ -3,6 +3,7 @@ import { ListBlock } from "./blocks/list";
 import { RichTextDocument } from "./base/document";
 import { IDocumentBlock } from "./base/block";
 import { ParagraphBlock } from "./blocks/paragraph";
+import { CounterBlock } from "./blocks/counter/model";
 
 export const Editor = () => {
   const [root] = useState<IDocumentBlock>(() => new RichTextDocument());
@@ -22,12 +23,29 @@ export const Editor = () => {
     root.addChild(paragraphBlock);
   };
 
-  const Document = root.getComponent();
+  const incrementFirstCounter = (rootBlock: IDocumentBlock): boolean => {
+    for (const block of rootBlock) {
+      if (block instanceof CounterBlock) {
+        block.increment();
+        return true;
+      }
+
+      if (incrementFirstCounter(block)) {
+        return true;
+      }
+    }
+    return false;
+  };
+
+  const DocumentRootComponent = root.getComponent();
 
   return (
     <>
       <button onClick={addParagraph}>Add paragraph</button>
-      <Document />
+      <button onClick={() => incrementFirstCounter(root)}>
+        Increment first counter
+      </button>
+      <DocumentRootComponent />
     </>
   );
 };

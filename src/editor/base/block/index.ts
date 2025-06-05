@@ -81,7 +81,7 @@ export abstract class DocumentBlock<TState> implements IDocumentBlock {
 
   protected abstract getInitialState(): TState;
 
-  private getInternalState(): InternalState<TState> {
+  protected getInternalState(): InternalState<TState> {
     return this.internalState;
   }
 

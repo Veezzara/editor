@@ -18,4 +18,10 @@ export class CounterBlock extends DocumentBlock<CounterBlockState> {
   protected getInternalComponent(): InternalComponent<CounterBlockState> {
     return CounterBlockComponent;
   }
+
+  public increment() {
+    this.setState({
+      count: this.getInternalState().state.count + 1,
+    });
+  }
 }
