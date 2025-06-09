@@ -4,6 +4,7 @@ import { BlockWrapper } from "./wrapper";
 import { Action } from "../../common/types/action";
 import { generateUuid } from "../../common/utils/generate-uuid";
 import { WithSubscriber } from "../../common/utils/with-subscriber";
+import { Observable } from "../../common/utils/observable";
 import {
   Wrapper,
   InternalComponent,
@@ -16,15 +17,14 @@ export abstract class DocumentBlock<TState> implements IDocumentBlock {
   protected id = generateUuid();
   protected root: IDocumentRoot | null = null;
   protected parent: IDocumentBlock | null = null;
-  protected internalState: InternalState<TState>;
-  private observers: Action[] = [];
+  private stateObservable: Observable<InternalState<TState>>;
 
   constructor() {
     const initialState = this.getInitialState();
-    this.internalState = {
+    this.stateObservable = new Observable<InternalState<TState>>({
       state: initialState,
       children: [],
-    };
+    });
   }
 
   getId(): string {
@@ -82,23 +82,19 @@ export abstract class DocumentBlock<TState> implements IDocumentBlock {
   protected abstract getInitialState(): TState;
 
   protected getInternalState(): InternalState<TState> {
-    return this.internalState;
+    return this.stateObservable.getValue();
   }
 
   protected setState(state: TState): void {
-    this.internalState = {
-      ...this.internalState,
+    const currentState = this.stateObservable.getValue();
+    this.stateObservable.setValue({
+      ...currentState,
       state,
-    };
-    this.notify();
+    });
   }
 
   private subscribe(action: Action) {
-    this.observers.push(action);
-
-    return () => {
-      this.observers = this.observers.filter((observer) => observer !== action);
-    };
+    return this.stateObservable.subscribe(action);
   }
 
   private Component = WithSubscriber<TState>({
@@ -108,12 +104,6 @@ export abstract class DocumentBlock<TState> implements IDocumentBlock {
     setState: (state) => this.setState(state),
     block: this,
   });
-
-  private notify() {
-    for (const observer of this.observers) {
-      observer();
-    }
-  }
 
   isComposite(): boolean {
     return false;
@@ -126,39 +116,39 @@ export abstract class DocumentBlock<TState> implements IDocumentBlock {
   }
 
   getChildren(): string[] {
-    return this.internalState.children;
+    return this.stateObservable.getValue().children;
   }
 
   addChild(child: IDocumentBlock): void {
     this.throwIfNotComposite();
 
-    const children = [...this.internalState.children, child.getId()];
-    this.internalState = {
-      ...this.internalState,
+    const currentState = this.stateObservable.getValue();
+    const children = [...currentState.children, child.getId()];
+    
+    this.stateObservable.setValue({
+      ...currentState,
       children,
-    };
+    });
 
     this.getRoot().addBlockToDocument(child);
     child.setRoot(this.getRoot());
     child.setParent(this);
-
-    this.notify();
   }
 
   removeChild(child: IDocumentBlock): void {
     this.throwIfNotComposite();
 
-    const children = this.internalState.children.filter(
+    const currentState = this.stateObservable.getValue();
+    const children = currentState.children.filter(
       (id) => id !== child.getId()
     );
-    this.internalState = {
-      ...this.internalState,
+    
+    this.stateObservable.setValue({
+      ...currentState,
       children,
-    };
+    });
 
     this.getRoot().removeBlockFromDocument(child);
-
-    this.notify();
   }
 
   *getIterator(): Generator<IDocumentBlock> {
